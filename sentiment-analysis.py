@@ -5,6 +5,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression 
 from nltk.corpus import stopwords
 import nltk
+import ssl
+
+# Fix SSL certificate issue for NLTK download
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
 
 # Download stopwords if you haven't already
 nltk.download('stopwords')
