@@ -83,6 +83,6 @@ test_predictions = (model.predict(X_test) > 0.5).astype("int32")
 # Save predictions to CSV
 output_df = test_df.copy()
 output_df['predicted_sentiments'] = test_predictions
-output_df[['reviews', 'predicted_sentiments']].to_csv('submission.csv', index=False)
+output_df[['reviews', 'predicted_sentiments']].to_csv('./data/submission.csv', index=False)
 
 print("Predictions saved to submission.csv")
