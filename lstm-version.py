@@ -2,12 +2,14 @@ import json
 import os
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping  # Import EarlyStopping
 
 # Load data function
 def load_data(filename):
@@ -62,20 +64,20 @@ model.add(Embedding(input_dim=MAX_VOCAB_SIZE, output_dim=EMBEDDING_DIM, input_le
 # LSTM layer
 model.add(LSTM(128, return_sequences=False))
 
-# Dropout layer to prevent overfitting
+# Dropout layer to prevent overfitting (using 0.5)
 model.add(Dropout(0.5))
 
 # Fully connected layer with output (sigmoid for binary classification)
 model.add(Dense(1, activation='sigmoid'))
 
 # Compile the model
-model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
 
-# Summary of the model architecture
-model.summary()
+# Set up EarlyStopping
+early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_val, y_val))
+# Train the model with EarlyStopping
+history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_val, y_val), callbacks=[early_stopping])
 
 # Predict on the test data
 test_predictions = (model.predict(X_test) > 0.5).astype("int32")
